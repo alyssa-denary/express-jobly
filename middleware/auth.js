@@ -38,20 +38,17 @@ function ensureLoggedIn(req, res, next) {
   return next();
 }
 
-// TODO: improve documentation below - remove exact actions as these may change
-// same feedback applies to ensureSameUserOrAdmin
-/** Middleware to use for creating, updating, and deleting companies user must be admin
+/** Middleware to use when user must be admin
  * If not, raises Unauthorized
  */
-function ensureIsAdmin(req, res, next) {
+function ensureAdmin(req, res, next) {
   if (res.locals.user && (res.locals.user.isAdmin === true)) {
     return next();
   }
   throw new UnauthorizedError();
 }
 
-/** Middleware for ensuring same user or admin for creating, updating, deleting
- * user
+/** Middleware for ensuring same user or admin is logged in
  * If not, raises Unauthorized
  */
 
@@ -71,6 +68,6 @@ function ensureSameUserOrAdmin(req, res, next) {
 module.exports = {
   authenticateJWT,
   ensureLoggedIn,
-  ensureIsAdmin,
+  ensureAdmin,
   ensureSameUserOrAdmin
 };
