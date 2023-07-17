@@ -1,11 +1,14 @@
 const { BadRequestError } = require("../expressError");
 
-// TODO: improve documentation for this function
 /**
- * Reformats javascript values to be updated for SQL SET
+ * Helper for making selective update queries.
+ *
+ * The calling function can use it to make the SET clause of an SQL UPDATE
+ * statement.
+ *
  * @param {Object} dataToUpdate data:{name, description, numEmployees, logoUrl}
  * @param {Object} jsToSql altering javascript object into sql variables
- *  example: {numEmployees: "num_employees",logoUrl: "logo_url"}
+ *  example: {numEmployees: "num_employees", logoUrl: "logo_url"}
  *
  * @returns {Object} {sqlsetCols, sqlvalues}
  * example: {setCols:'"first_name"=$1, "age"=$2', values: ['Aliya', 32] }
