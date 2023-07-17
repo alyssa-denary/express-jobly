@@ -16,6 +16,7 @@ class Company {
    * Throws BadRequestError if company already in database.
    * */
 
+  // TODO: reformat SQL queries throughout file
   static async create({ handle, name, description, numEmployees, logoUrl }) {
     const duplicateCheck = await db.query(
       `SELECT handle
@@ -100,7 +101,7 @@ class Company {
     return filteredCompaniesRes.rows;
   }
 
-
+// TODO: improve documentation and naming for this function
   /**
    * Private Method for building SQL where clause and values for findSome
    * @param {Object} filterBy

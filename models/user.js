@@ -49,6 +49,8 @@ class User {
     throw new UnauthorizedError("Invalid username/password");
   }
 
+  // TODO: reformat SQL queries
+
   /** Register user with data.
    *
    * Returns { username, firstName, lastName, email, isAdmin }
@@ -115,6 +117,8 @@ class User {
     return result.rows;
   }
 
+  // TODO: feature: add application status to user model
+
   /** Given a username, return data about user.
    *
    * Returns { username, first_name, last_name, is_admin, jobs }
@@ -173,9 +177,9 @@ class User {
         });
     const usernameVarIdx = "$" + (values.length + 1);
 
-    const querySql = `UPDATE users 
-                      SET ${setCols} 
-                      WHERE username = ${usernameVarIdx} 
+    const querySql = `UPDATE users
+                      SET ${setCols}
+                      WHERE username = ${usernameVarIdx}
                       RETURNING username,
                                 first_name AS "firstName",
                                 last_name AS "lastName",

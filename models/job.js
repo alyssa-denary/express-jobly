@@ -5,11 +5,13 @@ const { BadRequestError, NotFoundError } = require("../expressError");
 const { sqlForPartialUpdate } = require("../helpers/sql");
 const Company = require("./company");
 
+//TODO: refactor unused imports
 
 /** Related functions for jobs */
 
 class Job {
 
+  // TODO: improve documentation for expected incoming data
   /** Create a job (from data), update db, return new job data
    * @param {title, salary, equity, company_handle}
    * If companyHandle does not exist, throws notFoundError

@@ -24,7 +24,7 @@ app.use(authenticateJWT);
 app.use("/auth", authRoutes);
 app.use("/companies", companiesRoutes);
 app.use("/users", usersRoutes);
-
+// TODO: route to jobs resource
 
 /** Handle 404 errors -- this matches everything */
 app.use(function (req, res, next) {

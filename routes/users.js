@@ -28,12 +28,12 @@ const router = express.Router();
  * This returns the newly created user and an authentication token for them:
  *  {user: { username, firstName, lastName, email, isAdmin }, token }
  *
- * Authorization required: login
+ * Authorization required: login // TODO: this should be admin
  **/
 
 router.post("/",
-  ensureLoggedIn, //no need
-  ensureSameUserOrAdmin, //just be admin
+  ensureLoggedIn, // TODO: remove loggedIn, should only rely on 1 middleware
+  ensureSameUserOrAdmin, // TODO: update to just admin
   async function (req, res, next) {
     const validator = jsonschema.validate(
       req.body,
@@ -75,7 +75,7 @@ router.get("/",
  **/
 
 router.get("/:username",
-  ensureLoggedIn,
+  ensureLoggedIn, // TODO: remove loggedIn, should only rely on 1 middleware
   ensureSameUserOrAdmin,
   async function (req, res, next) {
     console.debug("INSIDE VIEW FUNCTION /users/:username");
@@ -95,7 +95,7 @@ router.get("/:username",
  **/
 
 router.patch("/:username",
-  ensureLoggedIn,
+  ensureLoggedIn, // TODO: remove loggedIn, should only rely on 1 middleware
   ensureSameUserOrAdmin,
   async function (req, res, next) {
     const validator = jsonschema.validate(
@@ -119,12 +119,14 @@ router.patch("/:username",
  **/
 
 router.delete("/:username",
-  ensureLoggedIn,
+  ensureLoggedIn, // TODO: remove loggedIn, should only rely on 1 middleware
   ensureSameUserOrAdmin,
   async function (req, res, next) {
     await User.remove(req.params.username);
     return res.json({ deleted: req.params.username });
   });
 
+
+// TODO: add route for job applications
 
 module.exports = router;

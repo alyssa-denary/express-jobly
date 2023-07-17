@@ -26,7 +26,7 @@ const router = new express.Router();
  */
 
 router.post("/",
-  ensureLoggedIn,//get rid of loggedin
+  ensureLoggedIn,//TODO: refactor this to only use one middleware get rid of loggedin
   ensureIsAdmin,
   async function (req, res, next) {
     const validator = jsonschema.validate(
@@ -114,11 +114,11 @@ router.get("/:handle", async function (req, res, next) {
  *
  * Returns { handle, name, description, numEmployees, logo_url }
  *
- * Authorization required: login
+ * Authorization required: login // TODO: this should be admin
  */
 
 router.patch("/:handle",
-  ensureLoggedIn,//no need
+  ensureLoggedIn,// TODO: remove loggedIn, should only rely on 1 middleware
   ensureIsAdmin,
   async function (req, res, next) {
     const validator = jsonschema.validate(
@@ -145,7 +145,7 @@ router.patch("/:handle",
  */
 
 router.delete("/:handle",
-  ensureLoggedIn,//get rid
+  ensureLoggedIn,// TODO: remove loggedIn, should only rely on 1 middleware
   ensureIsAdmin,
   async function (req, res, next) {
     await Company.remove(req.params.handle);

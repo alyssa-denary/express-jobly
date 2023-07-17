@@ -38,7 +38,8 @@ function ensureLoggedIn(req, res, next) {
   return next();
 }
 
-
+// TODO: improve documentation below - remove exact actions as these may change
+// same feedback applies to ensureSameUserOrAdmin
 /** Middleware to use for creating, updating, and deleting companies user must be admin
  * If not, raises Unauthorized
  */
