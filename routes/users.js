@@ -8,7 +8,7 @@ const express = require("express");
 const {
   ensureLoggedIn,
   ensureSameUserOrAdmin,
-  ensureIsAdmin
+  ensureAdmin
 } = require("../middleware/auth");
 const { BadRequestError } = require("../expressError");
 const User = require("../models/user");
@@ -31,7 +31,7 @@ const router = express.Router();
  * Authorization required: admin
  **/
 
-router.post("/", ensureIsAdmin, async function (req, res, next) {
+router.post("/", ensureAdmin, async function (req, res, next) {
     const validator = jsonschema.validate(
       req.body,
       userNewSchema,
@@ -55,7 +55,7 @@ router.post("/", ensureIsAdmin, async function (req, res, next) {
  * Authorization required: admin
  **/
 
-router.get("/", ensureIsAdmin, async function (req, res, next) {
+router.get("/", ensureAdmin, async function (req, res, next) {
     const users = await User.findAll();
     return res.json({ users });
   });
