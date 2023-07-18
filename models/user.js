@@ -48,8 +48,6 @@ class User {
     throw new UnauthorizedError("Invalid username/password");
   }
 
-  // TODO: reformat SQL queries
-
   /** Register user with data.
    *
    * Returns { username, firstName, lastName, email, isAdmin }
