@@ -127,9 +127,13 @@ router.patch("/:handle", ensureAdmin, async function (req, res, next) {
 
     // deconstructed as safeguard to ensure these are the only props included
     const {name, description, numEmployees, logoUrl} = req.body;
-    const company = await Company.update(req.params.handle, {
-      name, description, numEmployees, logoUrl
-    });
+    const dataToSend = {name, description, numEmployees, logoUrl};
+    for (const key in dataToSend) {
+      if (dataToSend[key] === undefined){
+        delete dataToSend[key]
+      }
+    }
+    const company = await Company.update(req.params.handle, dataToSend);
 
     return res.json({ company });
   });
