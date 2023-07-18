@@ -16,34 +16,34 @@ class Company {
    * Throws BadRequestError if company already in database.
    * */
 
-  // TODO: reformat SQL queries throughout file
   static async create({ handle, name, description, numEmployees, logoUrl }) {
-    const duplicateCheck = await db.query(
-      `SELECT handle
-           FROM companies
-           WHERE handle = $1`,
-      [handle]);
+    const duplicateCheck = await db.query(`
+        SELECT handle
+        FROM companies
+        WHERE handle = $1`, [handle]);
 
     if (duplicateCheck.rows[0])
       throw new BadRequestError(`Duplicate company: ${handle}`);
 
-    const result = await db.query(
-      `INSERT INTO companies(
+    const result = await db.query(`
+              INSERT INTO companies(handle,
+                                    name,
+                                    description,
+                                    num_employees,
+                                    logo_url)
+              VALUES ($1, $2, $3, $4, $5)
+              RETURNING
+                  handle,
+                  name,
+                  description,
+                  num_employees AS "numEmployees",
+                  logo_url AS "logoUrl"`, [
           handle,
           name,
           description,
-          num_employees,
-          logo_url)
-           VALUES
-             ($1, $2, $3, $4, $5)
-           RETURNING handle, name, description, num_employees AS "numEmployees", logo_url AS "logoUrl"`,
-      [
-        handle,
-        name,
-        description,
-        numEmployees,
-        logoUrl,
-      ],
+          numEmployees,
+          logoUrl,
+        ],
     );
     const company = result.rows[0];
 
@@ -57,14 +57,14 @@ class Company {
 
   static async findAll() {
     console.log("in findAll");
-    const companiesRes = await db.query(
-      `SELECT handle,
-                name,
-                description,
-                num_employees AS "numEmployees",
-                logo_url AS "logoUrl"
-           FROM companies
-           ORDER BY name`);
+    const companiesRes = await db.query(`
+        SELECT handle,
+               name,
+               description,
+               num_employees AS "numEmployees",
+               logo_url AS "logoUrl"
+        FROM companies
+        ORDER BY name`);
     return companiesRes.rows;
   }
 
@@ -86,27 +86,27 @@ class Company {
 
     const { where, values } = this._createSqlFilter(filterBy);
 
-    const filteredCompaniesRes = await db.query(
-      `SELECT handle,
+    const filteredCompaniesRes = await db.query(`
+        SELECT handle,
                 name,
                 description,
                 num_employees AS "numEmployees",
                 logo_url AS "logoUrl"
-           FROM companies
-           WHERE ${where}
-           ORDER BY name`,
-      values
+        FROM companies
+        WHERE ${where}
+        ORDER BY name`, values
     );
 
     return filteredCompaniesRes.rows;
   }
 
-// TODO: improve documentation and naming for this function
   /**
    * Private Method for building SQL where clause and values for findSome
    * @param {Object} filterBy
-   * Not all filters required.
-   * example: {nameLike: "net", minEmployees: 5}
+   * filterBy possible properties (all optional):
+   * - minEmployees
+   * - maxEmployees
+   * - nameLike (will find case-insensitive, partial matches)
    *
    * Returns {where: `name ILIKE $1 AND num_employees >= $2` values: ["net", 5]}
    */
@@ -144,15 +144,14 @@ class Company {
    **/
 
   static async get(handle) {
-    const companyRes = await db.query(
-      `SELECT handle,
-                name,
-                description,
-                num_employees AS "numEmployees",
-                logo_url AS "logoUrl"
-           FROM companies
-           WHERE handle = $1`,
-      [handle]);
+    const companyRes = await db.query(`
+        SELECT handle,
+               name,
+               description,
+               num_employees AS "numEmployees",
+               logo_url AS "logoUrl"
+        FROM companies
+        WHERE handle = $1`, [handle]);
 
     const company = companyRes.rows[0];
 
@@ -186,8 +185,13 @@ class Company {
     const querySql = `
       UPDATE companies
       SET ${setCols}
-        WHERE handle = ${handleVarIdx}
-        RETURNING handle, name, description, num_employees AS "numEmployees", logo_url AS "logoUrl"`;
+      WHERE handle = ${handleVarIdx}
+      RETURNING
+          handle,
+          name,
+          description,
+          num_employees AS "numEmployees",
+          logo_url AS "logoUrl"`;
     const result = await db.query(querySql, [...values, handle]);
     const company = result.rows[0];
 
@@ -202,12 +206,11 @@ class Company {
    **/
 
   static async remove(handle) {
-    const result = await db.query(
-      `DELETE
-           FROM companies
-           WHERE handle = $1
-           RETURNING handle`,
-      [handle]);
+    const result = await db.query(`
+      DELETE
+      FROM companies
+      WHERE handle = $1
+      RETURNING handle`, [handle]);
     const company = result.rows[0];
 
     if (!company) throw new NotFoundError(`No company: ${handle}`);
