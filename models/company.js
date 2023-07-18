@@ -100,12 +100,13 @@ class Company {
     return filteredCompaniesRes.rows;
   }
 
-// TODO: improve documentation and naming for this function
   /**
    * Private Method for building SQL where clause and values for findSome
    * @param {Object} filterBy
-   * Not all filters required.
-   * example: {nameLike: "net", minEmployees: 5}
+   * filterBy possible properties (all optional):
+   * - minEmployees
+   * - maxEmployees
+   * - nameLike (will find case-insensitive, partial matches)
    *
    * Returns {where: `name ILIKE $1 AND num_employees >= $2` values: ["net", 5]}
    */
