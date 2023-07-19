@@ -112,6 +112,17 @@ router.delete("/:username", ensureSameUserOrAdmin, async function (req, res, nex
   });
 
 
-// TODO: add route for job applications
+/** POST /[username]/jobs/[id]  { state } => { application }
+ *
+ * Returns {"applied": jobId}
+ *
+ * Authorization required: admin or same user
+ * */
+
+router.post("/:username/jobs/:id", ensureSameUserOrAdmin, async function (req, res, next) {
+  const jobId = +req.params.id;
+  await User.applyToJob(req.params.username, jobId);
+  return res.json({ applied: jobId });
+});
 
 module.exports = router;
