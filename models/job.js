@@ -169,7 +169,8 @@ class Job {
   */
 
   static async update(jobId, data) {
-    // TODO: Find way to ensure only title, salary, equity included in data but also pass along empty obj if empty?
+    // TODO: Increase security by ensuring only allowed fields within "data" are
+    // sent to database, while maintaining sql helper error for empty obj
     const { setCols, values } = sqlForPartialUpdate(data, {});
     const idVarIdx = "$" + (values.length + 1);
 

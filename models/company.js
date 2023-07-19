@@ -173,7 +173,8 @@ class Company {
    */
 
   static async update(handle, data) {
-    // console.assert(typeof data.numEmployees=== 'number');
+    // TODO: Increase security by ensuring only allowed fields within "data" are
+    // sent to database, while maintaining sql helper error for empty obj
     const { setCols, values } = sqlForPartialUpdate(
       data,
       {

@@ -14,7 +14,7 @@ const { BCRYPT_WORK_FACTOR } = require("../config.js");
 /** Related functions for users. */
 
 class User {
-  /** authenticate user with username, password.
+  /** Authenticate user with username, password.
    *
    * Returns { username, first_name, last_name, email, is_admin }
    *
@@ -117,8 +117,6 @@ class User {
     return result.rows;
   }
 
-  // TODO: feature: add application status to user model
-
   /** Given a username, return data about user.
    *
    * Returns { username, first_name, last_name, is_admin, jobs }
@@ -141,6 +139,13 @@ class User {
     const user = userRes.rows[0];
 
     if (!user) throw new NotFoundError(`No user: ${username}`);
+
+    const userApplicationsRes = await db.query(`
+        SELECT a.job_id
+        FROM applications AS a
+        WHERE a.username = $1`, [username]);
+
+    user.applications = userApplicationsRes.rows.map(a => a.job_id);
 
     return user;
   }
@@ -167,6 +172,8 @@ class User {
       data.password = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR);
     }
 
+    // TODO: Increase security by ensuring only allowed fields within "data" are
+    // sent to database, while maintaining sql helper error for empty obj
     const { setCols, values } = sqlForPartialUpdate(
         data,
         {
@@ -206,6 +213,34 @@ class User {
     const user = result.rows[0];
 
     if (!user) throw new NotFoundError(`No user: ${username}`);
+  }
+
+  /** Apply for job: update db, returns undefined.
+   *
+   * - username: username applying for job
+   * - jobId: job id
+   **/
+
+  static async applyToJob(username, jobId) {
+    const preCheck = await db.query(`
+        SELECT id
+        FROM jobs
+        WHERE id = $1`, [jobId]);
+    const job = preCheck.rows[0];
+
+    if (!job) throw new NotFoundError(`No job: ${jobId}`);
+
+    const preCheck2 = await db.query(`
+        SELECT username
+        FROM users
+        WHERE username = $1`, [username]);
+    const user = preCheck2.rows[0];
+
+    if (!user) throw new NotFoundError(`No username: ${username}`);
+
+    await db.query(`
+        INSERT INTO applications (job_id, username)
+        VALUES ($1, $2)`, [jobId, username]);
   }
 }
 
