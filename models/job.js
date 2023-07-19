@@ -19,10 +19,10 @@ class Job {
     const companyPreCheck = await db.query(`
                 SELECT handle
                 FROM companies
-                WHERE handle = $1`, [data.companyHandle]);
+                WHERE handle = $1`, [companyHandle]);
     const company = companyPreCheck.rows[0];
 
-    if (!company) throw new NotFoundError(`No company: ${data.companyHandle}`);
+    if (!company) throw new NotFoundError(`No company: ${companyHandle}`);
 
     const result = await db.query(`
         INSERT INTO jobs(title,
@@ -169,7 +169,7 @@ class Job {
   */
 
   static async update(jobId, data) {
-    console.log(data);
+    // TODO: Find way to ensure only title, salary, equity included in data but also pass along empty obj if empty?
     const { setCols, values } = sqlForPartialUpdate(data, {});
     const idVarIdx = "$" + (values.length + 1);
 
@@ -183,15 +183,13 @@ class Job {
             salary,
             equity,
             company_handle AS "companyHandle"`;
-    try{
-      const result = await db.query(querySql, [...values, jobId]);
-    }
-    catch(err){
-      console.log(err);
-      throw new NotFoundError(`No job: ${jobId}`)
-    }
+
+    const result = await db.query(querySql, [...values, jobId]);
 
     const job = result.rows[0];
+
+    if (!job) throw new NotFoundError(`No job: ${jobId}`);
+
     return job;
   }
 
